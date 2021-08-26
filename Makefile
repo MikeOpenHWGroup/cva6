@@ -2,6 +2,8 @@
 # Date: 03/19/2017
 # Description: Makefile for linting and testing Ariane.
 
+# make -j argument: set to whatever your machine can handle
+NUM_JOBS       ?= 1
 # questa library
 library        ?= work
 # verilator lib
