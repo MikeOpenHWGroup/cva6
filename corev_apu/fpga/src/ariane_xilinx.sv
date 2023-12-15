@@ -190,6 +190,8 @@ localparam config_pkg::cva6_cfg_t CVA6Cfg = '{
   NrRgprPorts:           unsigned'(0),
   NrWbPorts:             unsigned'(0),
   EnableAccelerator:     bit'(0),
+  RVS:                   bit'(1),
+  RVU:                   bit'(1),
   HaltAddress:           dm::HaltAddress,
   ExceptionAddress:      dm::ExceptionAddress,
   DmBaseAddress:         ariane_soc::DebugBase,
@@ -205,7 +207,11 @@ localparam config_pkg::cva6_cfg_t CVA6Cfg = '{
   // cached region
   NrCachedRegionRules:   unsigned'(1),
   CachedRegionAddrBase:  1024'({ariane_soc::DRAMBase}),
-  CachedRegionLength:    1024'({ariane_soc::DRAMLength})
+  CachedRegionLength:    1024'({ariane_soc::DRAMLength}),
+  MaxOutstandingStores:  unsigned'(7),
+  DebugEn: bit'(1),
+  NonIdemPotenceEn: bit'(0),
+  AxiBurstWriteEn: bit'(0)
 };
 
 localparam type rvfi_instr_t = logic;

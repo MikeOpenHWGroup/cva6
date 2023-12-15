@@ -88,6 +88,8 @@ build_tools:
   extends:
     - .setup_job
   script:
+    - git submodule update --init verif/core-v-verif
+    - source $SYN_VCS_BASHRC
     # ROOT_PROJECT is used by Spike installer and designates the toplevel of core-v-verif tree.
     - 'export ROOT_PROJECT=$(pwd)'
     # If a local build of Spike is requested, clean up build and installation directories.
@@ -127,6 +129,7 @@ smoke:
     DASHBOARD_JOB_DESCRIPTION: "Short tests to challenge most architectures with most testbenchs configurations"
     DASHBOARD_SORT_INDEX: 0
     DASHBOARD_JOB_CATEGORY: "Basic"
+    SPIKE_TANDEM: 1
   parallel:
     matrix:
       - DV_SIMULATORS:
@@ -181,7 +184,17 @@ hwconfig:
   timeout: 2 hours
   before_script:
     - !reference [.fe_smoke_test, before_script]
-  rules: *on_dev
+  rules: &on_dev_rtl
+    - if: $CI_KIND == "regress"
+    - if: $CI_KIND == "verif"
+    - if: $CI_KIND == "dev"
+      changes:
+        paths:
+          - core/**/*
+          - corev_apu/**/*
+        compare_to: master
+    - when: manual
+      allow_failure: true
 
 asic-synthesis:
   extends:
@@ -304,21 +317,10 @@ riscv-tests-p:
     - .regress_test
   rules: &on_verif
     - if: $CI_KIND == "verif"
+      allow_failure: true
     - when: manual
       allow_failure: true
   timeout: 4h
-
-csr_test:
-  extends:
-    - .verif_test
-  variables:
-    DASHBOARD_JOB_TITLE: "csr_test $DV_TARGET"
-    DASHBOARD_JOB_DESCRIPTION: "CSR regression suite"
-    DASHBOARD_SORT_INDEX: 0
-    DASHBOARD_JOB_CATEGORY: "Test suites"
-    DV_SIMULATORS: "veri-testharness,spike"
-  script: source verif/regress/dv-riscv-csr-access-test.sh
-  after_script: *simu_after_script
 
 mmu_sv32_tests:
   extends:
@@ -348,8 +350,8 @@ generated_tests:
         DASHBOARD_JOB_TITLE: "Generated Hazard Arithmetic tests"
         DASHBOARD_JOB_DESCRIPTION: "Generate Hazard register (RAW) Arithmetic tests using CVA6-DV"
       - list_num: 3
-        DASHBOARD_JOB_TITLE: "Generated CSR tests"
-        DASHBOARD_JOB_DESCRIPTION: "Generate Random CSR tests using CVA6-DV"
+        DASHBOARD_JOB_TITLE: "Generated Illegal instruction tests"
+        DASHBOARD_JOB_DESCRIPTION: "Generate Random Illegal instruction tests using CVA6-DV"
       - list_num: 4
         DASHBOARD_JOB_TITLE: "Generated MMU tests"
         DASHBOARD_JOB_DESCRIPTION: "Generate Random MMU tests using CVA6-DV"
@@ -401,11 +403,26 @@ directed_isacov-tests:
     - mv verif/sim/vcs_results/default/vcs.d/simv.vdb artifacts/coverage
     - python3 .gitlab-ci/scripts/report_pass.py
 
+csr_embedded_tests:
+  extends:
+    - .verif_test
+  variables:
+    DASHBOARD_JOB_TITLE: "csr_embedded test $DV_TARGET"
+    DASHBOARD_JOB_DESCRIPTION: "CSR Test generated using UVM-REG"
+    DASHBOARD_SORT_INDEX: 15
+    DASHBOARD_JOB_CATEGORY: "CSR tests"
+    DV_SIMULATORS: "vcs-uvm"
+  script:
+    - mkdir -p artifacts/coverage
+    - source verif/regress/dv-csr-embedded-tests.sh
+    - mv verif/sim/vcs_results/default/vcs.d/simv.vdb artifacts/coverage
+    - python3 .gitlab-ci/scripts/report_pass.py
+
 directed_xif-tests:
   extends:
     - .verif_test
   variables:
-    DASHBOARD_SORT_INDEX: 15
+    DASHBOARD_SORT_INDEX: 16
     DASHBOARD_JOB_CATEGORY: "Functional Coverage"
   parallel:
     matrix:
@@ -484,6 +501,7 @@ code_coverage-report:
     - directed_isacov-tests
     - generated_xif_tests
     - directed_xif-tests
+    - csr_embedded_tests
   variables:
     DASHBOARD_JOB_TITLE: "Report merge coverage"
     DASHBOARD_JOB_DESCRIPTION: "Report merge coverage of generated tests"
@@ -502,7 +520,7 @@ code_coverage-report:
 check gitlab jobs status:
   stage: find failures
   rules:
-    - if: $CI_KIND == "regress" || $CI_KIND == "verif"
+    - if: $DASHBOARD_URL && $CI_KIND != "none"
       when: on_failure
   variables:
     DASHBOARD_JOB_TITLE: "Environment check"

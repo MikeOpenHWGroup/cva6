@@ -7,6 +7,11 @@
 #
 # Original Author: Ayoub JALALI (ayoub.jalali@external.thalesgroup.com)
 
+if [ -n "$RISCV_ZCB" ]; then
+  echo "Using RISCV_ZCB to support Zcb extension"
+  RISCV=$RISCV_ZCB
+fi
+
 if ! [ -n "$RISCV" ]; then
   echo "Error: RISCV variable undefined"
   return
@@ -49,7 +54,7 @@ if [[ "$list_num" = 1 ]];then
            "riscv_load_store_xif_test"
            "riscv_rand_jump_xif_test"
            );
-   I=(100 100 100 100);
+   I=(80 80 80 80);
 fi
 
 if [[ "$list_num" != 0 ]];then
@@ -74,7 +79,7 @@ printf "+=======================================================================
 j=0
 while [[ $j -lt ${#TEST_NAME[@]} ]];do
   cp ../env/corev-dv/custom/riscv_custom_instr_enum.sv ./dv/src/isa/custom/
-  python3 cva6.py --testlist=$TESTLIST_FILE --test ${TEST_NAME[j]} --iss_yaml cva6.yaml --target $DV_TARGET -cs ../env/corev-dv/target/rv32imc/ --mabi ilp32 --isa rv32imc --simulator_yaml ../env/corev-dv/simulator.yaml --iss=vcs-uvm,spike -i ${I[j]} -bz 1 --iss_timeout 300
+  python3 cva6.py --testlist=$TESTLIST_FILE --test ${TEST_NAME[j]} --iss_yaml cva6.yaml --target $DV_TARGET -cs ../env/corev-dv/target/rv32imcb/ --mabi ilp32 --isa rv32imc --isa_extension="zba,zbb,zbc,zbs,zcb" --simulator_yaml ../env/corev-dv/simulator.yaml --iss=vcs-uvm,spike -i ${I[j]} -bz 1 --iss_timeout 300
   n=0
   echo "Generate the test: ${TEST_NAME[j]}"
 #this while loop detects the failed tests from the log file and remove them

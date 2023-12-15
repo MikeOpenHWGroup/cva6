@@ -20,7 +20,7 @@ fi
 VERILATOR_REPO="https://github.com/verilator/verilator.git"
 VERILATOR_BRANCH="master"
 # Use the release tag instead of a full SHA1 hash.
-VERILATOR_HASH="v5.008"
+VERILATOR_HASH="v5.018"
 VERILATOR_PATCH="$TOP/../verif/regress/verilator-v5.patch"
 
 # Unset historical variable VERILATOR_ROOT as it collides with the build process.
@@ -51,6 +51,7 @@ if [ ! -f "$VERILATOR_INSTALL_DIR/bin/verilator" ]; then
     echo "VERILATOR_BRANCH=$VERILATOR_BRANCH"
     echo "VERILATOR_HASH=$VERILATOR_HASH"
     echo "VERILATOR_PATCH=$VERILATOR_PATCH"
+    echo "NUM_JOBS=$NUM_JOBS"
     mkdir -p $VERILATOR_BUILD_DIR
     cd $VERILATOR_BUILD_DIR
     # Clone only if the ".git" directory does not exist.

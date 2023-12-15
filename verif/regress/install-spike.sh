@@ -34,7 +34,7 @@ else
   # Use the in-tree vendorized Spike if SPIKE_SRC_DIR is not set
   # or when a fully local installation was requested.
   if [ -z "$SPIKE_SRC_DIR" -o "$SPIKE_INSTALL_DIR" = "__local__" ]; then
-    export SPIKE_SRC_DIR=$ROOT_PROJECT/vendor/riscv/riscv-isa-sim
+    export SPIKE_SRC_DIR=$ROOT_PROJECT/verif/core-v-verif/vendor/riscv/riscv-isa-sim
   fi
 
   # Set the installation location of Spike.
@@ -55,7 +55,9 @@ else
     # Build and install Spike (including extensions).
     mkdir -p build
     cd build
-    ../configure --prefix="$SPIKE_INSTALL_DIR"
+    if [[ ! -f config.log ]]; then
+        ../configure --prefix="$SPIKE_INSTALL_DIR"
+    fi
     make -j${NUM_JOBS}
     echo "Installing Spike in '$SPIKE_INSTALL_DIR'..."
     make install
