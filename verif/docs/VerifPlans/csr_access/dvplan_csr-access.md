@@ -153,7 +153,7 @@ Module: CSR ACCESS VERIFICATION[](#module-csr-access-verification "Permalink 
 
 ##### Item: 000[](#id2 "Permalink to this headline")
 
-*   **Requirement location:** https://docs.openhwgroup.org/projects/cva6-user-manual/01\_cva6\_user/CSR\_CV32A60X.html
+*   **Requirement location:** https://docs.openhwgroup.org/projects/cva6-user-manual/01_cva6_user/CSR_CV32A60X.html
     
 *   **Feature Description**
     
