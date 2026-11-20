@@ -1,5 +1,26 @@
 [
   {
+    "id": 44767157901,
+    "source": "github-actions",
+    "simulator": "verilator",
+    "run_number": 76,
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "https://github.com/MikeOpenHWGroup/cva6/actions/runs/44767157901",
+    "head_branch": "Contributing-MikeOpenHW",
+    "head_sha": "aac54fd7",
+    "event": "push",
+    "created_at": "2026-11-20T15:49:37Z",
+    "updated_at": "2026-11-20T16:02:39Z",
+    "run_started_at": "2026-11-20T15:49:37Z",
+    "duration_seconds": 782,
+    "total_jobs": 0,
+    "passed_jobs": 0,
+    "failed_jobs": 0,
+    "skipped_jobs": 0,
+    "jobs": []
+  },
+  {
     "id": 44766350228,
     "source": "github-actions",
     "simulator": "verilator",
